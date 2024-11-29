@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Heart Disease Detection</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body class="bg-light">
+    <div class="container">
+        <main>
+            <div class="py-3 text-center">
+                <h2>Heart Disease Detection/心臟病檢測</h2>
+                <p class="lead">Please fill the form below to analyze your data.</p>
+                <p class="lead">請填寫下面的表格來分析您的數據.</p>
+            </div>
+
+            <form id="form1" onsubmit="run(event)">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="form-label">Age/年齡</label>
+                        <input type="text" class="form-control" id="age" placeholder="Years" required />
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label">Sex/性別</label>
+                        <select class="form-select" id="sex" required>
+                            <option value="1" selected>Male</option>
+                            <option value="0">Female</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <label class="form-label">Chest pain type/胸痛類型</label>
+                        <select class="form-select" id="cp" required>
+                            <option value="0">Typical angina/典型心絞痛</option>
+                            <option value="1">Atypical angina/非典型心絞痛</option>
+                            <option value="2">Non-anginal pain/非心絞痛</option>
+                            <option value="3">Asymptomatic/無症狀</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label">Resting blood pressure/靜止血壓</label>
+                        <input type="text" class="form-control" id="trestbps" placeholder="in mm Hg" required />
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label">Serum cholestoral/血清膽固醇</label>
+                        <input type="text" class="form-control" id="chol" placeholder="in mg/dl" required />
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label">Fasting blood sugar > 120 mg/dl/空腹血糖 > 120 mg/dl</label>
+                        <select class="form-select" id="fbs" required>
+                            <option value="1">Yes/是的</option>
+                            <option value="0">No/不</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label">Resting ECG results/靜止心電圖結果</label>
+                        <select class="form-select" id="restecg" required>
+                            <option value="0">Normal/普通的</option>
+                            <option value="1">ST-T wave abnormality/ST-T波異常</option>
+                            <option value="2">Left ventricular hypertrophy/左心室肥厚</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label">Maximum heart rate achieved/達到的最大心率</label>
+                        <input type="text" class="form-control" id="thalach" required />
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="form-label">Exercise induced angina/運動誘發心絞痛</label>
+                        <select class="form-select" id="exang" required>
+                            <option value="1">Yes/是的</option>
+                            <option value="0">No/不</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-12">
+                        <label class="form-label">Thalium (thal)/鉈</label>
+                        <select class="form-select" id="thal" required>
+                            <option value="0">Normal/普通的</option>
+                            <option value="1">Fixed defect/修復缺陷</option>
+                            <option value="2">Reversible defect/可逆缺陷</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+
+                <button class="w-100 btn btn-primary btn-lg" type="submit">
+                    Analyze/分析
+                </button>
+            </form>
+
+            <div class="row" id="rslt">
+                <div class="col-sm-12 py-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-text" id="rslt-text"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function run(event) {
+            event.preventDefault();
+
+            const url = "http://127.0.0.1:5000/predict_heart_disease";
+
+
+            const age = Number(document.getElementById("age").value);
+            const sex = Number(document.getElementById("sex").value);
+            const cp = Number(document.getElementById("cp").value);
+            const trestbps = Number(document.getElementById("trestbps").value);
+            const chol = Number(document.getElementById("chol").value);
+            const fbs = Number(document.getElementById("fbs").value);
+            const restecg = Number(document.getElementById("restecg").value);
+            const thalach = Number(document.getElementById("thalach").value);
+            const exang = Number(document.getElementById("exang").value);
+            const thal = Number(document.getElementById("thal").value);
+
+
+            const data = {
+                age: age,
+                sex: sex,
+                cp: cp,
+                trestbps: trestbps,
+                chol: chol,
+                fbs: fbs,
+                restecg: restecg,
+                thalach: thalach,
+                exang: exang,
+                thal: thal,
+            };
+
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json", 
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log("API Response:", result);
+
+                const prediction = result.predict;
+                let rslt = "<p>The result:</p>";
+                if (prediction === "Yes") {
+                    rslt += "<div class='alert alert-danger' role='alert'><strong>Positive</strong>: The patient might have heart disease/病人可能患有心臟病";
+                } else {
+                    rslt += "<div class='alert alert-success' role='alert'><strong>Negative</strong>: The patient is less likely to have heart disease/患者患心臟病的可能性較小";
+                }
+                document.getElementById("rslt-text").innerHTML = rslt;
+            } catch (error) {
+                console.error("API Error:", error);
+                document.getElementById("rslt-text").innerHTML =
+                    `<div class='alert alert-warning' role='alert'><strong>Error:</strong> ${error.message}</div>`;
+            }
+        }
+
+    </script>
+</body>
+
+</html>
